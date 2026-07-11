@@ -81,3 +81,9 @@ ec-test/
 docs/superpowers/*
 .worktrees/
 .pnpm-store/
+
+# Ota local runtime artifacts
+.ota/state/*
+.ota/contracts/*
+.ota/receipts/*
+.ota/proof/*

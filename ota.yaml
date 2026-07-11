@@ -1,0 +1,183 @@
+# <!--
+#                 █████
+#                ░░███
+#        ██████  ███████    ██████
+#       ███░░███░░░███░    ░░░░░███
+#      ░███ ░███  ░███      ███████
+#      ░███ ░███  ░███ ███ ███░░███
+#      ░░██████   ░░█████ ░░████████
+#       ░░░░░░     ░░░░░   ░░░░░░░░
+#
+#    Copyright (C) 2026 — 2026, Ota. All Rights Reserved.
+#
+#    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    Unless required by applicable law or agreed to in writing, software distributed under the
+#    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+#    either express or implied. See the License for the specific language governing permissions
+#    and limitations under the License.
+# -->
+
+version: 1
+project:
+  name: eventcatalog-language-server-lineage
+  description: Narrow Langium generated-source producer and build-consumer pressure slice
+  type: library
+
+toolchains:
+  node:
+    version: ">=20"
+    package_managers:
+      pnpm: "*"
+
+artifacts:
+  language-server-ast:
+    kind: generated_source
+    producer: language-server:generate
+    paths:
+      - packages/language-server/src/generated/ast.ts
+      - packages/language-server/src/generated/grammar.ts
+      - packages/language-server/src/generated/module.ts
+      - packages/language-server/syntaxes/ec.tmLanguage.json
+    inputs:
+      - packages/language-server/src/ec.langium
+      - packages/language-server/langium-config.json
+
+tasks:
+  setup:
+    description: Hydrate the lockfile-backed workspace dependencies for the language-server slice
+    category: setup
+    prepare:
+      kind: dependency_hydration
+      medium: package_dependencies
+      source:
+        kind: node_package_manager
+        cwd: .
+        manager: pnpm
+        mode: install
+        frozen_lockfile: true
+        filter: "@eventcatalog/language-server"
+    requirements:
+      toolchains:
+        - node
+    effects:
+      writes:
+        - node_modules
+      network: true
+      network_kind: dependency_hydration
+    safe_for_agent: true
+
+  language-server:generate:
+    description: Generate the Langium AST, grammar, and module source
+    category: setup
+    command:
+      exe: pnpm
+      args:
+        - --filter
+        - "@eventcatalog/language-server"
+        - run
+        - generate
+    depends_on:
+      - setup
+    requirements:
+      toolchains:
+        - node
+    effects:
+      writes:
+        - packages/language-server/src/generated
+        - packages/language-server/syntaxes/ec.tmLanguage.json
+    safe_for_agent: true
+
+  language-server:build:
+    description: Compile the language server against the generated source
+    category: build
+    command:
+      exe: pnpm
+      args:
+        - --filter
+        - "@eventcatalog/language-server"
+        - run
+        - build
+    depends_on:
+      - language-server:generate
+    requires_artifacts:
+      - language-server-ast
+    requirements:
+      toolchains:
+        - node
+    safe_for_agent: true
+
+  sdk:build:
+    description: Build the workspace SDK required by downstream language-server consumers
+    category: build
+    command:
+      exe: pnpm
+      args:
+        - --filter
+        - "@eventcatalog/sdk"
+        - run
+        - build
+    depends_on:
+      - setup
+    requirements:
+      toolchains:
+        - node
+    safe_for_agent: true
+
+  visualiser:build:
+    description: Build the workspace visualiser required by the VS Code extension bundle
+    category: build
+    command:
+      exe: pnpm
+      args:
+        - --filter
+        - "@eventcatalog/visualiser"
+        - run
+        - build
+    depends_on:
+      - setup
+    requirements:
+      toolchains:
+        - node
+    safe_for_agent: true
+
+  vscode-extension:build:
+    description: Build the sibling VS Code extension against the generated language-server source
+    category: build
+    command:
+      exe: pnpm
+      args:
+        - --filter
+        - eventcatalog-dsl
+        - run
+        - build
+    depends_on:
+      - language-server:generate
+      - sdk:build
+      - visualiser:build
+    requires_artifacts:
+      - language-server-ast
+    requirements:
+      toolchains:
+        - node
+    safe_for_agent: true
+
+agent:
+  safe_tasks:
+    - language-server:build
+    - vscode-extension:build
+  writable_paths:
+    - node_modules
+    - packages/language-server/src/generated
+    - packages/language-server/syntaxes
+    - packages/vscode-extension/syntaxes
+  protected_paths:
+    - .github/workflows
+  bootstrap:
+    ota:
+      note: Only install ota if it is missing and installation is approved.
+      source:
+        kind: branch
+        branch: 1.6.24-implementation
