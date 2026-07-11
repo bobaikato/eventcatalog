@@ -71,4 +71,4 @@ jobs:
         run: ota run vscode-extension:build --agent --dry-run
 
       - name: Build generated-source consumer closure
-        run: ota run vscode-extension:build --agent
+        run: ota run vscode-extension:build --agent --stream
