@@ -157,6 +157,7 @@ tasks:
         - build
     depends_on:
       - language-server:generate
+      - language-server:build
       - sdk:build
       - visualiser:build
     requires_artifacts:
