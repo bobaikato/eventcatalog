@@ -45,6 +45,9 @@ artifacts:
     inputs:
       - packages/language-server/src/ec.langium
       - packages/language-server/langium-config.json
+    replay:
+      authority_manifest: replay/language-server-ast.ota.json
+      consumption: verify_unchanged
 
 tasks:
   setup:
@@ -111,6 +114,30 @@ tasks:
         - node
     safe_for_agent: true
 
+  language-server:check-promoted:
+    description: Verify the promoted Langium output without rerunning generation
+    category: build
+    command:
+      exe: git
+      args:
+        - diff
+        - --exit-code
+        - --
+        - packages/language-server/src/generated/ast.ts
+        - packages/language-server/src/generated/grammar.ts
+        - packages/language-server/src/generated/module.ts
+        - packages/language-server/syntaxes/ec.tmLanguage.json
+        - packages/vscode-extension/syntaxes/ec.tmLanguage.json
+    requires_artifacts:
+      - language-server-ast
+    requirements:
+      tools:
+        git: "*"
+    safe_for_agent: true
+    notes: |
+      This promoted replay lane deliberately omits `language-server:generate`. Ota must verify the
+      explicitly promoted output authority before this agent-safe check starts.
+
   sdk:build:
     description: Build the workspace SDK required by downstream language-server consumers
     category: build
@@ -167,9 +194,26 @@ tasks:
         - node
     safe_for_agent: true
 
+workflows:
+  default: language-server
+  language-server:
+    intent: ci_validation
+    description: Build the language server against freshly generated Langium source
+    run:
+      task: language-server:build
+  promoted-language-server:
+    intent: ci_validation
+    description: Verify promoted Langium generated source without regeneration
+    run:
+      task: language-server:check-promoted
+    notes: |
+      This lane proves only the selected approved generated-source output. It does not rerun the
+      generator, prove the wider VS Code extension build, or claim repository-wide verification.
+
 agent:
   safe_tasks:
     - language-server:build
+    - language-server:check-promoted
     - vscode-extension:build
   writable_paths:
     - node_modules
@@ -183,4 +227,4 @@ agent:
       note: Only install ota if it is missing and installation is approved.
       source:
         kind: branch
-        branch: 1.6.24-implementation
+        branch: 1.6.25-implementation

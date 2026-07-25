@@ -50,7 +50,7 @@ jobs:
           node-version: 24.x
           cache: pnpm
 
-      - uses: ota-run/setup@v1
+      - uses: ota-run/setup@493cba84bf7f7c11c9e8e996d832d93a89c62184 # v1.0.8
         with:
           source: contract
           contract-path: ota.yaml
@@ -72,3 +72,62 @@ jobs:
 
       - name: Build generated-source consumer closure
         run: ota run vscode-extension:build --agent --stream
+
+  promoted-language-server-replay:
+    name: Promoted language-server replay (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - uses: ota-run/setup@493cba84bf7f7c11c9e8e996d832d93a89c62184 # v1.0.8
+        with:
+          source: contract
+          contract-path: ota.yaml
+
+      - name: Generate the current Langium source lineage
+        run: ota run language-server:build --agent --stream
+
+      - name: Record the Langium generated-source baseline
+        run: ota baseline record --artifact language-server-ast --json > eventcatalog-baseline-record.json
+
+      - name: Promote the recorded Langium baseline for this pressure run
+        shell: bash
+        run: |
+          set -euo pipefail
+          attestation="$(jq -er '.attestation' eventcatalog-baseline-record.json)"
+          ota baseline promote --artifact language-server-ast --attestation "$attestation" --json > eventcatalog-baseline-promote.json
+
+      - name: Diagnose promoted replay authority
+        run: ota doctor --workflow promoted-language-server .
+
+      - name: Preview promoted replay workflow
+        run: ota up --workflow promoted-language-server --dry-run --json .
+
+      - name: Run promoted replay consumer
+        run: ota run language-server:check-promoted --agent --stream .
+
+      - name: Archive promoted replay receipt
+        run: ota receipt --task language-server:check-promoted --json --archive .
+
+      - name: Confirm replay did not regenerate Langium source
+        run: git diff --exit-code -- packages/language-server/src/generated packages/language-server/syntaxes/ec.tmLanguage.json packages/vscode-extension/syntaxes/ec.tmLanguage.json
+
+      - name: Upload replay authority evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: eventcatalog-promoted-language-server-replay-evidence
+          path: |
+            eventcatalog-baseline-record.json
+            eventcatalog-baseline-promote.json
+            replay/language-server-ast.ota.json
+            .ota/replay-baselines/language-server-ast/
+            .ota/receipts/
+          if-no-files-found: warn
