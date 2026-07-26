@@ -114,7 +114,7 @@ jobs:
         run: ota run language-server:check-promoted --agent --stream .
 
       - name: Archive promoted replay receipt
-        run: ota receipt --task language-server:check-promoted --json --archive .
+        run: ota receipt --workflow promoted-language-server --json --archive .
 
       - name: Upload replay authority evidence
         if: always()
