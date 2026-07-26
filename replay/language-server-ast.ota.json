@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "language-server-ast",
-  "selected_attestation_identity": "sha256:74bba36f891a506e3ac3d0c6a2c7a3c2a57478c7d8d047cccd51f8f35fc1c499",
+  "selected_attestation_identity": "sha256:99bd468eccd90a6427c0c912814c493301bd93c23aba336a82832b3567929586",
   "trust_root": "scm_review",
   "attestation": {
     "schema_version": 1,
@@ -31,14 +31,14 @@
         "identity": "sha256:efbc984e5d77706b800a4846b760e3e248f07b9215432e5be39ccd1ea912b0e8"
       }
     ],
-    "contract_identity": "sha256:8aa7d8c08d3d5be35ce320c7e440fcfad38a1c6570702d013116ee96fc9c27c7",
-    "source_identity": "git:bd6ddb63280996d106f0cc8f9fa4077af0445eb9",
-    "execution_receipt_identity": "sha256:2b342a31a6177a56c552e64ccdbbe0a6d28cb6160f29bf6cabc31ff71104370c",
-    "execution_receipt_archive": ".ota/receipts/replay-baseline-receipt-20260726-104619-189Z.json",
+    "contract_identity": "sha256:8dee8b54694a691f5422d32caeeea0b40b5fcbd4f73100cb4a110471ed6a4293",
+    "source_identity": "git:1cc59f0abc3303e6814eb66966ddf6331de54043",
+    "execution_receipt_identity": "sha256:6dfd3a3da59b6929641b13d4c08cfdf54cdeabebb9ba68b6424c9418cd1ae873",
+    "execution_receipt_archive": ".ota/receipts/replay-baseline-receipt-20260726-233341-554Z.json",
     "execution_boundary_graph_identity": "sha256:a8142370ac6e5d1d4fd19c29b73320d4fb887f50f1585244a10026d8784068bb",
     "asserted_target_closure_identity": "sha256:05f6037d3d7928cb7f959786e16c5ff227a305d72b0567a1c3ec98682595b39f",
     "derivation_input_closure_identity": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "created_at": "2026-07-26T10:46:19.189Z"
+    "created_at": "2026-07-26T23:33:41.554Z"
   },
   "outputs": [
     {
@@ -62,7 +62,7 @@
       "identity": "sha256:efbc984e5d77706b800a4846b760e3e248f07b9215432e5be39ccd1ea912b0e8"
     }
   ],
-  "promoted_at": "2026-07-26T10:46:19.478Z",
-  "promotion_identity": "sha256:0f136799bef3c3f0e9f15b34e2fdeb2650946ac6380c724950ec7e968e69f5aa",
+  "promoted_at": "2026-07-26T23:33:55.036Z",
+  "promotion_identity": "sha256:d7b99a2bc8c9aa4c3e2cfd963a36ebc4b7ee473c1134b4fccc57721ef7aff7a7",
   "state": "promoted"
 }
