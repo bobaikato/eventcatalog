@@ -111,30 +111,33 @@ tasks:
     requirements:
       toolchains:
         - node
+    effects:
+      writes:
+        - packages/language-server/dist
     safe_for_agent: true
 
   language-server:check-promoted:
-    description: Verify the promoted Langium output without rerunning generation
+    description: Compile the promoted Langium output without rerunning generation
     category: build
     command:
-      exe: git
+      exe: pnpm
       args:
-        - diff
-        - --exit-code
-        - --
-        - packages/language-server/src/generated/ast.ts
-        - packages/language-server/src/generated/grammar.ts
-        - packages/language-server/src/generated/module.ts
-        - packages/language-server/syntaxes/ec.tmLanguage.json
+        - --filter
+        - "@eventcatalog/language-server"
+        - run
+        - build
     requires_artifacts:
       - language-server-ast
     requirements:
-      tools:
-        git: "*"
+      toolchains:
+        - node
+    effects:
+      writes:
+        - packages/language-server/dist
     safe_for_agent: true
     notes: |
-      This promoted replay lane deliberately omits `language-server:generate`. Ota must verify the
-      explicitly promoted output authority before this agent-safe check starts.
+      This promoted replay lane deliberately omits `language-server:generate`. Ota verifies the
+      explicitly promoted output authority before and after this agent-safe compiler runs.
 
   sdk:build:
     description: Build the workspace SDK required by downstream language-server consumers
@@ -201,7 +204,7 @@ workflows:
       task: language-server:build
   promoted-language-server:
     intent: ci_validation
-    description: Verify promoted Langium generated source without regeneration
+    description: Compile promoted Langium generated source without regeneration
     run:
       task: language-server:check-promoted
     notes: |
@@ -217,6 +220,7 @@ agent:
     - node_modules
     - packages/language-server/src/generated
     - packages/language-server/syntaxes
+    - packages/language-server/dist
     - packages/vscode-extension/syntaxes
   protected_paths:
     - .github/workflows

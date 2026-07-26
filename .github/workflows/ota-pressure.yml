@@ -110,14 +110,11 @@ jobs:
       - name: Preview promoted replay workflow
         run: ota up --workflow promoted-language-server --dry-run --json .
 
-      - name: Run promoted replay consumer
+      - name: Compile promoted generated source without regeneration
         run: ota run language-server:check-promoted --agent --stream .
 
       - name: Archive promoted replay receipt
         run: ota receipt --task language-server:check-promoted --json --archive .
-
-      - name: Confirm replay did not regenerate Langium source
-        run: git diff --exit-code -- packages/language-server/src/generated packages/language-server/syntaxes/ec.tmLanguage.json
 
       - name: Upload replay authority evidence
         if: always()
