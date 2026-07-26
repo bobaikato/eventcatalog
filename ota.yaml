@@ -31,6 +31,9 @@ toolchains:
     version: ">=20"
     package_managers:
       pnpm: "*"
+    fulfillment:
+      source: corepack
+      mode: run
 
 execution:
   default_context: host
