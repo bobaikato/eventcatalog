@@ -92,7 +92,7 @@ jobs:
           contract-path: ota.yaml
 
       - name: Generate the current Langium source lineage
-        run: ota run language-server:build --agent --stream
+        run: ota run language-server:generate --agent --stream
 
       - name: Record the Langium generated-source baseline
         run: ota baseline record --artifact language-server-ast --json > eventcatalog-baseline-record.json
@@ -117,7 +117,7 @@ jobs:
         run: ota receipt --task language-server:check-promoted --json --archive .
 
       - name: Confirm replay did not regenerate Langium source
-        run: git diff --exit-code -- packages/language-server/src/generated packages/language-server/syntaxes/ec.tmLanguage.json packages/vscode-extension/syntaxes/ec.tmLanguage.json
+        run: git diff --exit-code -- packages/language-server/src/generated packages/language-server/syntaxes/ec.tmLanguage.json
 
       - name: Upload replay authority evidence
         if: always()

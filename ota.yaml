@@ -41,7 +41,6 @@ artifacts:
       - packages/language-server/src/generated/grammar.ts
       - packages/language-server/src/generated/module.ts
       - packages/language-server/syntaxes/ec.tmLanguage.json
-      - packages/vscode-extension/syntaxes/ec.tmLanguage.json
     inputs:
       - packages/language-server/src/ec.langium
       - packages/language-server/langium-config.json
@@ -127,7 +126,6 @@ tasks:
         - packages/language-server/src/generated/grammar.ts
         - packages/language-server/src/generated/module.ts
         - packages/language-server/syntaxes/ec.tmLanguage.json
-        - packages/vscode-extension/syntaxes/ec.tmLanguage.json
     requires_artifacts:
       - language-server-ast
     requirements:
