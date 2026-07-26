@@ -95,14 +95,14 @@ jobs:
         run: ota run language-server:generate --agent --stream
 
       - name: Record the Langium generated-source baseline
-        run: ota baseline record --artifact language-server-ast --json > eventcatalog-baseline-record.json
+        run: ota baseline record --artifact language-server-ast --json > "$RUNNER_TEMP/eventcatalog-baseline-record.json"
 
       - name: Promote the recorded Langium baseline for this pressure run
         shell: bash
         run: |
           set -euo pipefail
-          attestation="$(jq -er '.attestation' eventcatalog-baseline-record.json)"
-          ota baseline promote --artifact language-server-ast --attestation "$attestation" --json > eventcatalog-baseline-promote.json
+          attestation="$(jq -er '.attestation' "$RUNNER_TEMP/eventcatalog-baseline-record.json")"
+          ota baseline promote --artifact language-server-ast --attestation "$attestation" --json > "$RUNNER_TEMP/eventcatalog-baseline-promote.json"
 
       - name: Diagnose promoted replay authority
         run: ota doctor --workflow promoted-language-server .
@@ -125,8 +125,8 @@ jobs:
         with:
           name: eventcatalog-promoted-language-server-replay-evidence
           path: |
-            eventcatalog-baseline-record.json
-            eventcatalog-baseline-promote.json
+            ${{ runner.temp }}/eventcatalog-baseline-record.json
+            ${{ runner.temp }}/eventcatalog-baseline-promote.json
             replay/language-server-ast.ota.json
             .ota/replay-baselines/language-server-ast/
             .ota/receipts/
