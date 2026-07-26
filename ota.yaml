@@ -32,6 +32,20 @@ toolchains:
     package_managers:
       pnpm: "*"
 
+execution:
+  default_context: host
+  lifecycle: persistent
+  backends:
+    container:
+      image: node@sha256:a25c9934ff6382cd4f08b6bc26c82bf4ea69b1e6f8dabfb2ead457374127c365
+      engines: [docker]
+  contexts:
+    host:
+      backend: native
+    promoted-replay:container:
+      backend: container
+      lifecycle: ephemeral
+
 artifacts:
   language-server-ast:
     kind: generated_source
@@ -46,7 +60,7 @@ artifacts:
       - packages/language-server/langium-config.json
     replay:
       authority_manifest: replay/language-server-ast.ota.json
-      consumption: verify_unchanged
+      consumption: read_only
 
 tasks:
   setup:
@@ -71,6 +85,10 @@ tasks:
       network: true
       network_kind: dependency_hydration
     safe_for_agent: true
+    execution:
+      modes:
+        container:
+          context: promoted-replay:container
 
   language-server:generate:
     description: Generate the Langium AST, grammar, and module source
@@ -137,6 +155,10 @@ tasks:
       writes:
         - packages/language-server/dist
     safe_for_agent: true
+    execution:
+      modes:
+        container:
+          context: promoted-replay:container
     notes: |
       This promoted replay lane deliberately omits `language-server:generate`. Ota verifies the
       explicitly promoted output authority before and after this agent-safe compiler runs.
