@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "artifact": "language-server-ast",
+  "selected_attestation_identity": "sha256:c3dbba430991208bab62be51c8c86ff23cb8a2f2006aa15b9e02098171dcc8cc",
+  "trust_root": "scm_review",
+  "attestation": {
+    "schema_version": 1,
+    "artifact": "language-server-ast",
+    "producer": "language-server:generate",
+    "execution_scope": "task:language-server:generate",
+    "execution_mode": "native",
+    "outputs": [
+      {
+        "path": "packages/language-server/src/generated/ast.ts",
+        "kind": "file",
+        "identity": "sha256:3d5b3f593a975a2b26b69070d47721c1e4f39f6ef07327e2650015593d5953f9"
+      },
+      {
+        "path": "packages/language-server/src/generated/grammar.ts",
+        "kind": "file",
+        "identity": "sha256:60a8d13c5fba757c2142c1a349a90b780ea06a1009a000f7b2741960980360b2"
+      },
+      {
+        "path": "packages/language-server/src/generated/module.ts",
+        "kind": "file",
+        "identity": "sha256:94dca6e12d1847c9f9d4cedbf6c6a79dd24f97b6ceaea558f32960b3e442d0dc"
+      },
+      {
+        "path": "packages/language-server/syntaxes/ec.tmLanguage.json",
+        "kind": "file",
+        "identity": "sha256:efbc984e5d77706b800a4846b760e3e248f07b9215432e5be39ccd1ea912b0e8"
+      }
+    ],
+    "contract_identity": "sha256:d947bd7aa3679a99fb571a548caf8653c377bcf5676438bde81708e36a54d4dc",
+    "source_identity": "git:603e388667fe3012920d9b97399808ddb6a8d7f5",
+    "execution_receipt_identity": "sha256:a1e1e42f3755ebe99ba7dabd9114ec792099863cc8e17985e8b986b8082eb29f",
+    "execution_receipt_archive": ".ota/receipts/replay-baseline-receipt-20260726-104354-237Z.json",
+    "execution_boundary_graph_identity": "sha256:a8142370ac6e5d1d4fd19c29b73320d4fb887f50f1585244a10026d8784068bb",
+    "asserted_target_closure_identity": "sha256:05f6037d3d7928cb7f959786e16c5ff227a305d72b0567a1c3ec98682595b39f",
+    "derivation_input_closure_identity": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "created_at": "2026-07-26T10:43:54.237Z"
+  },
+  "outputs": [
+    {
+      "path": "packages/language-server/src/generated/ast.ts",
+      "kind": "file",
+      "identity": "sha256:3d5b3f593a975a2b26b69070d47721c1e4f39f6ef07327e2650015593d5953f9"
+    },
+    {
+      "path": "packages/language-server/src/generated/grammar.ts",
+      "kind": "file",
+      "identity": "sha256:60a8d13c5fba757c2142c1a349a90b780ea06a1009a000f7b2741960980360b2"
+    },
+    {
+      "path": "packages/language-server/src/generated/module.ts",
+      "kind": "file",
+      "identity": "sha256:94dca6e12d1847c9f9d4cedbf6c6a79dd24f97b6ceaea558f32960b3e442d0dc"
+    },
+    {
+      "path": "packages/language-server/syntaxes/ec.tmLanguage.json",
+      "kind": "file",
+      "identity": "sha256:efbc984e5d77706b800a4846b760e3e248f07b9215432e5be39ccd1ea912b0e8"
+    }
+  ],
+  "promoted_at": "2026-07-26T10:43:54.517Z",
+  "promotion_identity": "sha256:444228e0df6ace2bdb27d884590ec4370eac59327ed4f0defc8bfe24b3aef444",
+  "state": "promoted"
+}
