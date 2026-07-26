@@ -126,6 +126,8 @@ tasks:
         - "@eventcatalog/language-server"
         - run
         - build
+    depends_on:
+      - setup
     requires_artifacts:
       - language-server-ast
     requirements:
