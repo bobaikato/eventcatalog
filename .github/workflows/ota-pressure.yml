@@ -74,7 +74,7 @@ jobs:
         run: ota run vscode-extension:build --agent --stream
 
   promoted-language-server-replay:
-    name: Promoted language-server replay (Ubuntu)
+    name: Promoted language-server container replay (Ubuntu)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -105,16 +105,16 @@ jobs:
           ota baseline promote --artifact language-server-ast --attestation "$attestation" --json > "$RUNNER_TEMP/eventcatalog-baseline-promote.json"
 
       - name: Diagnose promoted replay authority
-        run: ota doctor --workflow promoted-language-server .
+        run: ota doctor --workflow promoted-language-server --container .
 
       - name: Preview promoted replay workflow
-        run: ota up --workflow promoted-language-server --dry-run --json .
+        run: ota up --workflow promoted-language-server --container --dry-run --json .
 
-      - name: Compile promoted generated source without regeneration
-        run: ota run language-server:check-promoted --agent --stream .
+      - name: Compile promoted generated source in its read-only container boundary
+        run: ota run language-server:check-promoted --container --agent --stream .
 
       - name: Archive promoted replay receipt
-        run: ota receipt --workflow promoted-language-server --json --archive .
+        run: ota receipt --workflow promoted-language-server --container --ephemeral --json --archive .
 
       - name: Upload replay authority evidence
         if: always()
@@ -130,46 +130,6 @@ jobs:
           if-no-files-found: warn
 
   committed-promoted-language-server-replay:
-    name: Committed promoted language-server replay (Ubuntu)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-          cache: pnpm
-
-      - uses: ota-run/setup@493cba84bf7f7c11c9e8e996d832d93a89c62184 # v1.0.8
-        with:
-          source: contract
-          contract-path: ota.yaml
-
-      - name: Diagnose committed promoted replay authority
-        run: ota doctor --workflow promoted-language-server .
-
-      - name: Preview committed promoted replay workflow
-        run: ota up --workflow promoted-language-server --dry-run --json .
-
-      - name: Compile committed promoted generated source
-        run: ota run language-server:check-promoted --agent --stream .
-
-      - name: Archive committed promoted replay receipt
-        run: ota receipt --workflow promoted-language-server --json --archive .
-
-      - name: Upload committed replay evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: eventcatalog-committed-promoted-language-server-replay-evidence
-          path: |
-            replay/language-server-ast.ota.json
-            .ota/receipts/
-          if-no-files-found: warn
-
-  committed-promoted-language-server-container-replay:
     name: Committed promoted language-server container replay (Ubuntu)
     runs-on: ubuntu-latest
     steps:
