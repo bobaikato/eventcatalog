@@ -41,34 +41,82 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24.x
           cache: pnpm
 
-      - uses: ota-run/setup@v1
+      - uses: ota-run/setup@85bf49c11a5aa3ddedfa56c47682cfd40b238f1f
         with:
           source: contract
           contract-path: ota.yaml
 
       - name: Validate contract
-        run: ota validate .
+        run: ota validate . --json
 
       - name: Diagnose readiness
-        run: ota doctor
+        run: ota doctor --json
 
       - name: List runnable tasks
-        run: ota tasks --use
+        run: ota tasks --use --json
 
       - name: List agent-safe tasks
-        run: ota tasks --safe --use
+        run: ota tasks --safe --use --json
 
       - name: Preview generated-source consumer closure
-        run: ota run vscode-extension:build --agent --dry-run
+        run: ota run vscode-extension:build --dry-run --json
+
+      - name: Preview the named workflow
+        run: ota up --workflow verify --dry-run --json
 
       - name: Build generated-source consumer closure
-        run: ota run vscode-extension:build --agent --stream
+        run: ota run vscode-extension:build --stream
+
+      - name: Archive selected task receipt
+        if: always()
+        run: ota receipt --archive --json
+
+      - name: Upload task evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: eventcatalog-task-evidence-${{ matrix.os }}
+          path: .ota/receipts
+          if-no-files-found: warn
+
+  workflow-runtime-proof:
+    name: Workflow runtime proof (ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - uses: ota-run/setup@85bf49c11a5aa3ddedfa56c47682cfd40b238f1f
+        with:
+          source: contract
+          contract-path: ota.yaml
+
+      - name: Prove the selected workflow runtime
+        run: ota proof runtime --workflow verify --json
+
+      - name: Archive workflow proof receipt
+        if: always()
+        run: ota receipt --workflow verify --archive --json
+
+      - name: Upload workflow proof evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: eventcatalog-workflow-proof
+          path: .ota/receipts
+          if-no-files-found: warn

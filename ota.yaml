@@ -21,6 +21,10 @@
 # -->
 
 version: 1
+metadata:
+  ota:
+    minimum_version: "1.6.26"
+
 project:
   name: eventcatalog-language-server-lineage
   description: Narrow Langium generated-source producer and build-consumer pressure slice
@@ -68,7 +72,7 @@ tasks:
         - node_modules
       network: true
       network_kind: dependency_hydration
-    safe_for_agent: true
+    safe_for_agent: false
 
   language-server:generate:
     description: Generate the Langium AST, grammar, and module source
@@ -90,7 +94,7 @@ tasks:
         - packages/language-server/src/generated
         - packages/language-server/syntaxes/ec.tmLanguage.json
         - packages/vscode-extension/syntaxes/ec.tmLanguage.json
-    safe_for_agent: true
+    safe_for_agent: false
 
   language-server:build:
     description: Compile the language server against the generated source
@@ -109,7 +113,7 @@ tasks:
     requirements:
       toolchains:
         - node
-    safe_for_agent: true
+    safe_for_agent: false
 
   sdk:build:
     description: Build the workspace SDK required by downstream language-server consumers
@@ -126,7 +130,7 @@ tasks:
     requirements:
       toolchains:
         - node
-    safe_for_agent: true
+    safe_for_agent: false
 
   visualiser:build:
     description: Build the workspace visualiser required by the VS Code extension bundle
@@ -143,7 +147,7 @@ tasks:
     requirements:
       toolchains:
         - node
-    safe_for_agent: true
+    safe_for_agent: false
 
   vscode-extension:build:
     description: Build the sibling VS Code extension against the generated language-server source
@@ -165,12 +169,25 @@ tasks:
     requirements:
       toolchains:
         - node
-    safe_for_agent: true
+    safe_for_agent: false
+
+workflows:
+  default: verify
+  verify:
+    intent: ci_validation
+    description: Build the sibling VS Code extension through the declared generated-source closure
+    setup:
+      task: setup
+    run:
+      task: vscode-extension:build
+    proof:
+      claim: bounded
+    notes: |
+      This finite native lane proves only the selected language-server generation and VS Code
+      extension build closure. It does not prove the wider EventCatalog workspace, editor
+      distribution, publishing, release, or deployment behavior.
 
 agent:
-  safe_tasks:
-    - language-server:build
-    - vscode-extension:build
   writable_paths:
     - node_modules
     - packages/language-server/src/generated
@@ -182,5 +199,5 @@ agent:
     ota:
       note: Only install ota if it is missing and installation is approved.
       source:
-        kind: branch
-        branch: 1.6.24-implementation
+        kind: version
+        version: v1.6.26
